@@ -10,7 +10,7 @@ public class Solution {
             if (words[i].equals(word2)) {
                 pos2 = i;
             } 
-            if (Math.abs(pos1 - pos2) < res) {
+            if (pos1 != -1 && pos2 != -1 && Math.abs(pos1 - pos2) < res) {
                 res = Math.abs(pos1 - pos2);
             }
         }
