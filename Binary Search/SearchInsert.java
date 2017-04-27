@@ -12,7 +12,7 @@ public class SearchInsert {
                 end = mid;
             }
         }
-        if (nums[start] > target) {
+        if (nums[start] >= target) {
             return start;
         }
         if (nums[end] < target) {
