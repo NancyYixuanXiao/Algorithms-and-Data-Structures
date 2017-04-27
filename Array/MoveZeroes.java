@@ -1,7 +1,7 @@
 // two pointers
 // i point to the position of next non-zero element
 // j traverse the array
-public class Solution {
+public class MoveZeroes {
     public void moveZeroes(int[] nums) {
         int i = 0;
         for (int j = 0; j < nums.length; j++) {
