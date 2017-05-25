@@ -1,5 +1,5 @@
 //P.243
-public class Solution {
+public class ShortestDistance {
     public int shortestDistance(String[] words, String word1, String word2) {
         int pos1 = -1, pos2 = -1;
         int res = words.length;
