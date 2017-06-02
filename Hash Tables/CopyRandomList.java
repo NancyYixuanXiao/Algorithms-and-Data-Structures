@@ -6,27 +6,30 @@
  *     RandomListNode(int x) { this.label = x; }
  * };
  */
-public class CopyRandomList {
+public class Solution {
     public RandomListNode copyRandomList(RandomListNode head) {
         Map<RandomListNode, RandomListNode> map = new HashMap<>();
-        RandomListNode i = head;
-        while (i != null) {
-            if (!map.containsKey(i)) {
-                map.put(i, new RandomListNode(i.label));
+        RandomListNode dummy = new RandomListNode(0);
+        RandomListNode newHead, prev = dummy;
+        while (head != null) {
+            if (!map.containsKey(head)) {
+                newHead = new RandomListNode(head.label);
+                map.put(head, newHead);
+            } else {
+                newHead = map.get(head);
             }
-            if(i.random != null && !map.containsKey(i.random)) {
-                map.put(i.random, new RandomListNode(i.random.label));
+            prev.next = newHead;
+            if (head.random != null) {
+                if (!map.containsKey(head.random)) {
+                    newHead.random = new RandomListNode(head.random.label);
+                    map.put(head.random, newHead.random);
+                } else {
+                    newHead.random = map.get(head.random);
+                }
             }
-            i = i.next;
+            head = head.next;
+            prev = newHead;
         }
-        i = head;
-        while (i != null) {
-            map.get(i).next = map.get(i.next);
-            if (i.random != null) {
-                map.get(i).random = map.get(i.random);
-            }
-            i = i.next;
-        }
-        return map.get(head);
+        return dummy.next;
     }
 }
