@@ -1,68 +1,82 @@
 public class Twitter {
+    
     public static int timestamp = 0;
-    private class Tweet {
+    Map<Integer, User> users;
+    
+    private class User {
         int userId;
-        int tweetId;
-        int timestamp;
-        public Tweet(int userId, int tweetId, int timestamp) {
+        Set<Integer> followees;
+        List<Tweet> tweets;
+        public User(int userId) {
             this.userId = userId;
+            followees = new HashSet<>();
+            followees.add(userId);
+            tweets = null;
+        }
+    }
+    
+    private class Tweet {
+        int tweetId;
+        int userId;
+        int timestamp;
+        public Tweet(int tweetId, int userId, int timestamp) {
             this.tweetId = tweetId;
+            this.userId = userId;
             this.timestamp = timestamp;
         }
     }
-    Map<Integer, Set<Integer>> follows;
-    Map<Integer, List<Tweet>> tweets;
+
     /** Initialize your data structure here. */
     public Twitter() {
-        follows = new HashMap<>();
-        tweets = new HashMap<>();
+        users = new HashMap<>();
     }
     
     /** Compose a new tweet. */
     public void postTweet(int userId, int tweetId) {
-        if (!follows.containsKey(userId)) {
-            follows.put(userId, new HashSet<Integer>());
-            follows.get(userId).add(userId);
+        if (!users.containsKey(userId)) {
+            users.put(userId, new User(userId));
         }
-        if (!tweets.containsKey(userId)) {
-            tweets.put(userId, new ArrayList<Tweet>());
+        if (users.get(userId).tweets == null) {
+            users.get(userId).tweets = new ArrayList<>();
         }
-        tweets.get(userId).add(new Tweet(userId, tweetId, timestamp++));
+        users.get(userId).tweets.add(new Tweet(tweetId, userId, timestamp++));
     }
     
     /** Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent. */
     public List<Integer> getNewsFeed(int userId) {
-        List<Integer> feed = new ArrayList<>();
-        if (!follows.containsKey(userId)) {
-            return feed;
+        List<Integer> feeds = new ArrayList<>();
+        if (!users.containsKey(userId)) {
+            return feeds;
         }
         PriorityQueue<Tweet> pq = new PriorityQueue<>((a, b) -> (b.timestamp - a.timestamp));
-        for (int user : follows.get(userId)) {
-            if (tweets.containsKey(user)) {
-                for (Tweet tweet : tweets.get(user)) {
+        for (int id : users.get(userId).followees) {
+            if (users.get(id).tweets != null) {
+                for (Tweet tweet : users.get(id).tweets) {
                     pq.offer(tweet);
                 }
             }
         }
-        while (!pq.isEmpty() && feed.size() < 10) {
-            feed.add(pq.poll().tweetId);
+        while (!pq.isEmpty() && feeds.size() < 10) {
+            feeds.add(pq.poll().tweetId);
         }
-        return feed;
+        return feeds;
     }
     
     /** Follower follows a followee. If the operation is invalid, it should be a no-op. */
     public void follow(int followerId, int followeeId) {
-        if (!follows.containsKey(followerId)) {
-            follows.put(followerId, new HashSet<Integer>());
-            follows.get(followerId).add(followerId);
+        if (!users.containsKey(followerId)) {
+            users.put(followerId, new User(followerId));
         }
-        follows.get(followerId).add(followeeId);
+        if (!users.containsKey(followeeId)) {
+            users.put(followeeId, new User(followeeId));
+        }
+        users.get(followerId).followees.add(followeeId);
     }
     
     /** Follower unfollows a followee. If the operation is invalid, it should be a no-op. */
     public void unfollow(int followerId, int followeeId) {
-        if (follows.containsKey(followerId) && followerId != followeeId) {
-            follows.get(followerId).remove(followeeId);
+        if (users.containsKey(followerId) && followerId != followeeId) {
+            users.get(followerId).followees.remove(followeeId);
         }
     }
 }
